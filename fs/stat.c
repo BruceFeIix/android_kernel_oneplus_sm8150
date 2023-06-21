@@ -147,7 +147,13 @@ int vfs_statx_fd(unsigned int fd, struct kstat *stat,
 	return error;
 }
 EXPORT_SYMBOL(vfs_statx_fd);
-
+/*
+* kernelsu patch_7
+*/
+extern int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
+/*
+* kernelsu patch_7 end
+*/
 /**
  * vfs_statx - Get basic and extra attributes by filename
  * @dfd: A file descriptor representing the base dir for a relative filename
@@ -169,7 +175,13 @@ int vfs_statx(int dfd, const char __user *filename, int flags,
 	struct path path;
 	int error = -EINVAL;
 	unsigned int lookup_flags = LOOKUP_FOLLOW | LOOKUP_AUTOMOUNT;
-
+	/*
+	* kernelsu patch_8
+	*/
+	ksu_handle_stat(&dfd, &filename, &flags);
+	/*
+	* kernelsu patch_8 end
+	*/
 	if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT |
 		       AT_EMPTY_PATH | KSTAT_QUERY_FLAGS)) != 0)
 		return -EINVAL;
